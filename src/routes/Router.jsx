@@ -12,6 +12,10 @@ import Students from "../pages/Students";
 import Exam from "../pages/Exam";
 import Billing from "../pages/Billing";
 import Setting from "../pages/Setting";
+import AddTeacher from "../pages/AddTeacher";
+import TeacherList from "../pages/TeacherList";
+import BillingCreate from "../pages/BillingCreate";
+import StudentBills from "../pages/StudentBills";
 
 
 
@@ -50,6 +54,17 @@ export const router = createBrowserRouter([
       {path: "billing", Component: Billing},
       {path: "settings", Component: Setting},
     ],
+  },
+  {path: "add-teacher", Component: AddTeacher },
+  {
+    path: "teacher-list", Component: TeacherList,
+  },
+
+  {
+    path: "/billing/create/:id", Component: BillingCreate,
+  },
+  {
+    path: "/billing/student/:id", Component: StudentBills,
   },
 
 ]);

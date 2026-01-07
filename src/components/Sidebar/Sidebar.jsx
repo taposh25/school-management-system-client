@@ -1,9 +1,12 @@
+import { FaUserShield } from "react-icons/fa";
 import { MdDashboard, MdNewReleases, MdPayments, MdPeople, MdQuiz, MdSchool, MdSettings } from "react-icons/md";
 import { NavLink } from "react-router";
+import useRole from "../../Hooks/useRole";
 
 
 
 const Sidebar = () => {
+  const {role} = useRole();
   return (
     <aside className="w-64 h-screen bg-[#16245c] text-white flex flex-col">
       
@@ -24,6 +27,15 @@ const Sidebar = () => {
         <SidebarItem to="/dashboard/students" icon={<MdSchool />} label="Students / Classes" />
         <SidebarItem to="/dashboard/billing" icon={<MdPayments />} label="Billing" />
         <SidebarItem to="/dashboard/exams" icon={<MdQuiz />} label="Exams" />
+   
+       {role === "admin" && (
+          <SidebarItem to="/dashboard/approve-teacher" icon={<FaUserShield />} label="Approve-Teacher" />
+        )}
+
+
+
+       {/* <SidebarItem to="/dashboard/approve-teacher" icon={<FaUserShield />} label="Approve-Teacher" /> */}
+    
         <SidebarItem to="/dashboard/settings" icon={<MdSettings />} label="Settings & Profile" />
       </nav>
 

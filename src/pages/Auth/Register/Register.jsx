@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useForm} from "react-hook-form";
 import { FaEnvelope, FaEye, FaEyeSlash, FaGoogle, FaImage, FaLock, FaUser } from "react-icons/fa";
 import useAuth from "../../../Hooks/useAuth";
-import { Link } from "react-router";
-import axios from "axios";
+import { Link, useNavigate } from "react-router";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import axios from "axios"; 
+
 
 
 const Register = () => {
@@ -16,56 +18,80 @@ const Register = () => {
 
   const {registerUser, updateUserProfile, signInGoogle} = useAuth();
 
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
+
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const password = watch("password");
 
-  const handleRegistration = (data) => {
-
-    // console.log("Register Data:", data.photo[0]);
+  
+  
+  const handleRegistration = async (data) => {
+  try {
     const imageFile = data.image[0];
-    registerUser(data.email, data.password)
-    .then(result=>{
-        const user = result.user;
-        console.log(user)
 
-        // store the image and get the image url
-        const formData = new FormData();
-        formData.append('image', imageFile);
+    // 1. Firebase Register
+    const result = await registerUser(data.email, data.password);
+    const user = result.user;
+     console.log(user);
+    // 2. Upload Image to imgbb (NORMAL AXIOS)
+    const formData = new FormData();
+    formData.append("image", imageFile);
 
-        const image_API_url = `https://api.imgbb.com/1/upload?key=${import.meta.env. VITE_image_host_key}`
-        axios.post(image_API_url, formData)
-        .then(res=>{
-          console.log("after image uploaded", res.data.data.url)
+    const image_API_url = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host_key}`;
 
-           // update user profile
-           const userProfile = {
-            displayName: data.name,
-            photoURL: res.data.data.url
-           }
-           updateUserProfile(userProfile)
-           .then(()=>{
-            console.log("user profile updated done", )
-           })
-             .catch(error => console.log(error));
-        })
-    
-        
-    })
-    .catch(error =>{
-        console.log(error.message);
-    })
-  };
-  const handleGoogleSign = ()=>{
-    signInGoogle()
-    .then(result =>{
-        console.log(result.user);
-    })
-    .catch(error =>{
-        console.log(error.message);
-    })
+    const imgRes = await axios.post(image_API_url, formData);
+    const photoURL = imgRes.data.data.url;
+
+    // 3. Update Firebase Profile
+    await updateUserProfile({
+      displayName: data.name,
+      photoURL: photoURL,
+    });
+
+    // 4. Save User to MongoDB
+    const userInfo = {
+      email: data.email,
+      displayName: data.name,
+      photoURL: photoURL,
+    };
+
+    await axiosSecure.post("/users", userInfo);
+
+    // 5. Navigate Home
+    navigate("/");
+
+  } catch (error) {
+    console.error("Register Error:", error.message);
   }
+};
+
+
+
+
+  const handleGoogleSign = async () => {
+  try {
+    const result = await signInGoogle();
+    const user = result.user;
+
+    const userInfo = {
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+    };
+
+    // backend already checks duplicate
+    await axiosSecure.post("/users", userInfo);
+
+    navigate("/");
+  } catch (error) {
+    console.error("Google Login Error:", error.message);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-indigo-600 px-4">

@@ -1,9 +1,10 @@
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash, FaGoogle, FaLock, FaUser } from "react-icons/fa";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import useAuth from "../../../Hooks/useAuth";
-
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const Login = () => {
   const {
@@ -12,49 +13,59 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const {signInUser, signInGoogle} = useAuth();
+  const { signInUser, signInGoogle } = useAuth();
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (data) => {
-    console.log("Login Data:", data);
-   signInUser(data.email, data.password)
-   .then(result => {
-    const user = result.user;
-    console.log(user);
-   })
-   .catch(error =>{
-    console.log(error.message);
-   })
-  };
+ 
 
-   const handleGoogleSign = ()=>{
-    signInGoogle()
-    .then(result =>{
-        console.log(result.user);
-    })
-    .catch(error =>{
-        console.log(error.message);
-    })
+  const handleLogin = async (data) => {
+  try {
+    await signInUser(data.email, data.password);
+    navigate("/");
+  } catch (error) {
+    console.error("Login Error:", error.message);
   }
+};
+
+
+
+  const handleGoogleSign = async () => {
+  try {
+    const result = await signInGoogle();
+    const user = result.user;
+
+    const userInfo = {
+      email: user.email,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+    };
+
+    await axiosSecure.post("/users", userInfo);
+    navigate("/");
+  } catch (error) {
+    console.error("Google Login Error:", error.message);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-        
         <h2 className="text-3xl font-bold text-center text-indigo-600 mb-6">
           Login
         </h2>
 
         <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
-          
-          {/* Name */}
+          {/* Email */}
           <div>
-            <label className="label">User Email</label>
+            <label className="label">Email</label>
             <div className="relative">
               <FaUser className="absolute top-3 left-3 text-gray-400" />
               <input
-                type="text"
+                type="email"
                 placeholder="Your Email"
                 className="input input-bordered w-full pl-10"
                 {...register("email", { required: "Email is required" })}
@@ -95,23 +106,20 @@ const Login = () => {
           </div>
 
           {/* Login Button */}
-          <button className="btn btn-primary w-full">
-            Login
-          </button>
+          <button className="btn btn-primary w-full">Login</button>
         </form>
 
-        {/* Divider */}
         <div className="divider">OR</div>
 
         {/* Google Login */}
         <button
           onClick={handleGoogleSign}
-          className="btn btn-outline w-full flex items-center gap-2">
+          className="btn btn-outline w-full flex items-center gap-2"
+        >
           <FaGoogle className="text-red-500" />
           Login with Google
         </button>
 
-        {/* Register Redirect */}
         <p className="text-center text-sm mt-6">
           Not registered yet?{" "}
           <Link

@@ -3,7 +3,7 @@ import React from 'react';
 const Dashboard = () => {
     return (
         <div>
-            <h2>Dashboard</h2>
+            <h2 className='text-2xl font-bold'>Only Admin Can Approve Teacher or Reject </h2>
         </div>
     );
 };

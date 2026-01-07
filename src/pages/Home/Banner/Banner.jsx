@@ -9,11 +9,17 @@ import image_3 from "../../../assets/image3.jpg";
 const Banner = () => {
   return (
     <Carousel
-      autoPlay
-      infiniteLoop
-      interval={10000}
+      autoPlay={true}
+      infiniteLoop={true}
+      interval={2000}
+      transitionTime={500} 
       showThumbs={false}
       showStatus={false}
+      showArrows={false}
+      swipeable
+      emulateTouch
+      stopOnHover={false}
+      
     >
       <div>
         <img src={image_1} alt="Banner 1" />

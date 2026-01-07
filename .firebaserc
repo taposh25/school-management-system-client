@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "school-system-bb33d",
+    "prod": "school-system-bb33d"
+  },
+  "targets": {},
+  "etags": {}
+}

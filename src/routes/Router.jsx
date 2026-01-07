@@ -9,7 +9,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Dashboard from "../pages/Dashboard";
 import Teachers from "../pages/Teachers";
 import Students from "../pages/Students";
-import Exam from "../pages/Exam";
+import ExamRoutine from "../pages/ExamRoutine";
 import Billing from "../pages/Billing";
 import Setting from "../pages/Setting";
 import AddTeacher from "../pages/AddTeacher";
@@ -52,7 +52,7 @@ export const router = createBrowserRouter([
       {path: "teachers", Component: Teachers},
       {path: "students", Component: Students},
       {path: "approve-teacher", Component: approveTeacher},
-      {path: "exams", Component: Exam},
+      {path: "exams", Component: ExamRoutine},
       {path: "billing", Component: Billing},
       {path: "settings", Component: Setting},
     ],

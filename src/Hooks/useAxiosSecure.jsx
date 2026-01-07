@@ -1,46 +1,48 @@
+
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import useAuth from './useAuth';
 import { useNavigate } from 'react-router';
 
+const axiosSecure = axios.create({
+  // baseURL: 'https://school-management-application-serve.vercel.app',
+  baseURL: "http://localhost:3000",
+});
 
-const axiousSecure = axios.create({
-    baseURL: 'http://localhost:3000'
-})
 const useAxiosSecure = () => {
-  const {user, logOutUser} = useAuth();
+  const { user, logOutUser } = useAuth();
   const navigate = useNavigate();
-    useEffect(() => {
-       const reqInceptor =  axiousSecure.interceptors.request.use((config) => {
-           
-                config.headers.Authorization = `Bearer ${user?.accessToken}`;
-                return config;
-        })
 
-        const resInterceptor = axiousSecure.interceptors.response.use((response)=>{
-            return response;
-        },(error)=>{
-            console.log(error);
+  useEffect(() => {
+    // Request interceptor
+    const reqInterceptor = axiosSecure.interceptors.request.use((config) => {
+      if (user?.accessToken) {
+        config.headers.Authorization = `Bearer ${user.accessToken}`;
+      }
+      return config;
+    });
 
-            const statusCode = error.status;
-            if(statusCode === 401 || statusCode === 403){
-                 logOutUser()
-                 .then(()=>{
-                  navigate("/login");
-                 })
-            }
+    // Response interceptor
+    const resInterceptor = axiosSecure.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const statusCode = error.response?.status; 
+        console.log(error);
 
-            return Promise.reject(error);
-        })
-        return () => {
-         axiousSecure.interceptors.request.eject(reqInceptor);
-         axiousSecure.interceptors.response.eject(resInterceptor);
-        }
+        // if (statusCode === 401 || statusCode === 403) {
+        //   logOutUser().then(() => navigate("/login"));
+        // }
+        return Promise.reject(error);
+      }
+    );
 
+    return () => {
+      axiosSecure.interceptors.request.eject(reqInterceptor);
+      axiosSecure.interceptors.response.eject(resInterceptor);
+    };
+  }, [user, logOutUser, navigate]);
 
-    }, [user, logOutUser, navigate]);
-
-    return axiousSecure
+  return axiosSecure;
 };
 
 export default useAxiosSecure;

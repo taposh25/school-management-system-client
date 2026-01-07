@@ -1,11 +1,5 @@
-// import { useQuery } from '@tanstack/react-query';
-// import React from 'react';
-// import useAuth from './useAuth';
-// import useAxiosSecure from './useAxiosSecure';
 
-import { useQuery } from "@tanstack/react-query";
-import useAuth from "./useAuth";
-import useAxiosSecure from "./useAxiosSecure";
+
 
 // const useRole = () => {
 //     const axiosSecure = useAxiosSecure();
@@ -24,6 +18,9 @@ import useAxiosSecure from "./useAxiosSecure";
 // export default useRole;
 
 
+import { useQuery } from "@tanstack/react-query";
+import useAuth from "./useAuth";
+import useAxiosSecure from "./useAxiosSecure";
 
 const useRole = () => {
     const axiosSecure = useAxiosSecure();

@@ -26,7 +26,7 @@ const Sidebar = () => {
         <SidebarItem to="/dashboard/teachers" icon={<MdPeople />} label="Teachers" />
         <SidebarItem to="/dashboard/students" icon={<MdSchool />} label="Students / Classes" />
         <SidebarItem to="/dashboard/billing" icon={<MdPayments />} label="Billing" />
-        <SidebarItem to="/dashboard/exams" icon={<MdQuiz />} label="Exams" />
+        <SidebarItem to="/dashboard/exams" icon={<MdQuiz />} label="Exam Routine" />
    
        {role === "admin" && (
           <SidebarItem to="/dashboard/approve-teacher" icon={<FaUserShield />} label="Approve-Teacher" />
